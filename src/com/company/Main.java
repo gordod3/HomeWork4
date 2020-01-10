@@ -11,10 +11,11 @@ public class Main {
 
     public static int bossHP = 2000;
     public static int bossD = 50;
-    public static int [] heroesHP = {250, 250, 250, 250, 250, 200, 200};
-    public static int [] heroesD = {20, 20, 20, -20, 20, 20, 20};
-    public static String [] heroesAT = {"Physical", "Magical", "Mental", "Heal", "Tor", "thief", "Berserk"};
+    public static int [] heroesHP = {250, 250, 250, 250, 250, 200, 200, 350};
+    public static int [] heroesD = {20, 20, 20, -20, 20, 20, 20, 10};
+    public static String [] heroesAT = {"Physical", "Magical", "Mental", "Heal", "Tor", "thief", "Berserk", "Tank"};
     public static String bossDef = "";
+    public static int tankDef;
 
     //////////////////////////////////////////////////////////////////////
     // Защита босса
@@ -55,6 +56,19 @@ public class Main {
     }
 
     //////////////////////////////////////////////////////////////////////
+    // Танк защищает.
+
+    public static void tank(int i) {
+        if (heroesHP[7] > 0 && i != 7) {
+            tankDef = bossD/5;
+            heroesHP[7] -= tankDef;
+            if (heroesHP[7] <= 0) {
+                System.out.println(heroesAT[7] + " - DIED!");
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////
     // Босс бьет
 
     public static void bossHit(){
@@ -62,8 +76,20 @@ public class Main {
             for (int i = 0; i < heroesHP.length; i++) {
                 if (heroesHP[i] > 0) {
                     if(i == 6){
-                        int bonus = bossD/3;
-                        heroesHP[i] = heroesHP[i] - (bossD - bonus);
+                        int bonus = bossD/5;
+                        if(heroesHP[7] > 0){
+                            int tankDef;
+                            tankDef = (bossD - bonus)/5;
+                            heroesHP[7] -= tankDef;
+                            if (heroesHP[7] <= 0) {
+                                System.out.println(heroesAT[7] + " - DIED!");
+                            }
+                        }
+                        heroesHP[i] = heroesHP[i] - (bossD - (bonus + tankDef));
+                        if (heroesHP[i] <= 0) {
+                            System.out.println(heroesAT[i] + " - DIED!");
+                            continue;
+                        }
                         bossHP = bossHP - heroesD[i] + bonus;
                         continue;
                     }
@@ -75,10 +101,11 @@ public class Main {
                             continue;
                         }
                     }
-                    heroesHP[i] = heroesHP[i] - bossD;
+                    tank(i);
+                    heroesHP[i] = heroesHP[i] - (bossD - tankDef);
                     if (heroesHP[i] <= 0) {
                         System.out.println(heroesAT[i] + " - DIED!");
-                        break;
+                        continue;
                     }
                 }
             }
