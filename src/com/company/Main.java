@@ -4,16 +4,16 @@ import java.util.Random;
 public class Main {
 
     public static int t = 1;
-    public static boolean stun;
+    public static boolean stun = false;
 
     //////////////////////////////////////////////////////////////////////
     // Переменные героев и босса
 
-    public static int bossHP = 700;
+    public static int bossHP = 2000;
     public static int bossD = 50;
-    public static int [] heroesHP = {250, 250, 250, 250, 250};
-    public static int [] heroesD = {20, 20, 20, -20, 20};
-    public static String [] heroesAT = {"Physical", "Magical", "Mental", "Heal", "Tor"};
+    public static int [] heroesHP = {250, 250, 250, 250, 250, 200};
+    public static int [] heroesD = {20, 20, 20, -20, 20, 20};
+    public static String [] heroesAT = {"Physical", "Magical", "Mental", "Heal", "Tor", "thief"};
     public static String bossDef = "";
 
     //////////////////////////////////////////////////////////////////////
@@ -40,12 +40,16 @@ public class Main {
             System.out.println("     Heroes won!");
             System.out.println("______________________");
             return true;
-        }
-        if(heroesHP[0] <= 0 && heroesHP[1] <= 0 && heroesHP[2] <= 0) {
-            System.out.println("______________________");
-            System.out.println("     Boss won!");
-            System.out.println("______________________");
-            return true;
+        }else {
+            int sum = 0;
+            for (int i = 0; i < heroesHP.length; ++i)
+                sum += heroesHP[i];
+            if (sum <= 0) {
+                System.out.println("______________________");
+                System.out.println("     Boss won!");
+                System.out.println("______________________");
+                return true;
+            }
         }
         return false;
     }
@@ -54,14 +58,18 @@ public class Main {
     // Босс бьет
 
     public static void bossHit(){
-        for (int i = 0; i < heroesHP.length; i++) {
-            if(heroesHP[i] > 0) {
-                heroesHP[i] = heroesHP[i] - bossD;
-                if(heroesHP[i] <= 0){
-                    System.out.println(heroesAT[i] + " - DIED!");
+        if(!stun) {
+            for (int i = 0; i < heroesHP.length; i++) {
+                if (heroesHP[i] > 0) {
+                    
+                    heroesHP[i] = heroesHP[i] - bossD;
+                    if (heroesHP[i] <= 0) {
+                        System.out.println(heroesAT[i] + " - DIED!");
+                        break;
+                    }
                 }
             }
-        }
+        } else stun = false;
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -73,7 +81,7 @@ public class Main {
                 Random r = new Random();
                 int coef = r.nextInt(6) + 2; // 3 4 5
                 bossHP = bossHP - (heroesD[i] * coef);
-                System.out.println("critical strike " + coef + "!\n" + heroesAT[i] + " atack - " + (heroesD[i] * coef) + ".");
+                System.out.println("critical strike " + coef + "!\n" + heroesAT[i] + " attack - " + (heroesD[i] * coef) + ".");
             } else if(heroesHP[i] > 0){
                 if ( i == 3){
                     for (int j = 0; j < heroesAT.length; j++) {
@@ -86,6 +94,18 @@ public class Main {
                 }
                 bossHP = bossHP - heroesD[i];
             }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    // Стан тора
+
+    public static void stunTor(){
+        Random r = new Random();
+        int ver = r.nextInt(5);
+        if(ver == 0 && heroesHP[4] > 0){
+            stun = true;
+            System.out.println("Tor successfully stun boss on next round!");
         }
     }
 
@@ -112,6 +132,7 @@ public class Main {
             changeBossDef();
             bossHit();
             heroesHit();
+            stunTor();
             printStatistics();
         }
 
