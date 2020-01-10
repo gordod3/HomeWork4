@@ -11,9 +11,9 @@ public class Main {
 
     public static int bossHP = 2000;
     public static int bossD = 50;
-    public static int [] heroesHP = {250, 250, 250, 250, 250, 200};
-    public static int [] heroesD = {20, 20, 20, -20, 20, 20};
-    public static String [] heroesAT = {"Physical", "Magical", "Mental", "Heal", "Tor", "thief"};
+    public static int [] heroesHP = {250, 250, 250, 250, 250, 200, 200};
+    public static int [] heroesD = {20, 20, 20, -20, 20, 20, 20};
+    public static String [] heroesAT = {"Physical", "Magical", "Mental", "Heal", "Tor", "thief", "Berserk"};
     public static String bossDef = "";
 
     //////////////////////////////////////////////////////////////////////
@@ -61,7 +61,20 @@ public class Main {
         if(!stun) {
             for (int i = 0; i < heroesHP.length; i++) {
                 if (heroesHP[i] > 0) {
-                    
+                    if(i == 6){
+                        int bonus = bossD/3;
+                        heroesHP[i] = heroesHP[i] - (bossD - bonus);
+                        bossHP = bossHP - heroesD[i] + bonus;
+                        continue;
+                    }
+                    if(i == 5){
+                        Random r = new Random();
+                        int ver = r.nextInt(5);
+                        if( ver == 0){
+                            System.out.println("Boss miss thief!");
+                            continue;
+                        }
+                    }
                     heroesHP[i] = heroesHP[i] - bossD;
                     if (heroesHP[i] <= 0) {
                         System.out.println(heroesAT[i] + " - DIED!");
